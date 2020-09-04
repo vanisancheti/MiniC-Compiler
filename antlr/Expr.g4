@@ -1,8 +1,8 @@
 grammar Expr;
 
-decl: MAIN '{' prog '}' EOF;
+prog: MAIN '{' statements '}' EOF;
 
-prog: (expr ';')+
+statements: (expr ';')+
     ;
 
 expr: expr ('*'|'/'|'%') expr
