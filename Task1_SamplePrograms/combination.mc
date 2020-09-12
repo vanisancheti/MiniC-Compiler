@@ -39,7 +39,7 @@ void main()
     N = read();
     int i;
 
-    for(i=0;i<N;i++)
+    for(i=0;i<N;i=i+1)
     {
         arr[i] = read();
         visited[i] = false;

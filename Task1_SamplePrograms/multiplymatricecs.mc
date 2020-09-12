@@ -21,7 +21,7 @@ void main()
     {
         for(j=0;j<Q;j=j+1)
         {
-            arr1[i][j] = read();
+            arr1[i,j] = read();
         }
     }
 
@@ -29,7 +29,7 @@ void main()
     {
         for(j=0;j<R;j=j+1)
         {
-            arr2[i][j] = read();
+            arr2[i,j] = read();
         }
     }
 
@@ -39,7 +39,7 @@ void main()
         {
             for(k=0;k<Q;k=k+1)
             {
-                arr3[i,j] = arr3[i,j] + arr1[i,k] + arr2[k,j];
+                arr3[i,j] = arr3[i,j] + arr1[i,k]*arr2[k,j];
             }
             print(arr3[i,j]);
             print(" ");

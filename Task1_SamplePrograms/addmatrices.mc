@@ -18,8 +18,8 @@ void main()
     {
         for(j=0;j<M;j=j+1)
         {
-            arr1[i][j] = read();
-            arr2[i][j] = read();
+            arr1[i,j] = read();
+            arr2[i,j] = read();
         }
     }
 
