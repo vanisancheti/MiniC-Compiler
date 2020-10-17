@@ -1,0 +1,49 @@
+int a;
+
+int compute(int a)
+{
+    return;
+}
+
+void main()
+{
+    !x;
+    -x;
+    (x);
+    a = 2;
+    compute(a);
+    12 + 13;
+    12>=13;
+    ab = ab * 12;
+    x!=true;
+    x AND y;
+    x = true;
+
+    if(x == true)
+    {
+        y = 'a';
+        y = 'x';
+    }
+    else
+    {
+        y = 'b';
+    }
+
+    for(temp=0; temp <= N; temp = temp + 1)
+    {
+        sum = sum + temp;
+    }
+
+    while(z < max_value)
+    {
+        z = z+1;
+        if(z == 3)
+        {
+            break;
+        }
+    }
+
+    cond(x == 1) y=1 : y=2;
+
+    return;
+}
