@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include "type.h"
 
 using namespace std;
 
@@ -14,6 +15,11 @@ class ASTStatCONTINUE;
 class ASTIf;
 class ASTFor;
 class ASTWhile;
+class ASTPrint;
+
+class ASTRead;
+class ASTReadInput;
+class ASTReadFile;
 
 class ASTFunc;
 class ASTFuncParam;
@@ -28,16 +34,14 @@ class ASTVarSingle;
 class ASTVar1darray;
 class ASTVar2darray;
 
-// class ASTPrint;
-// class ASTReadinput;
-// class ASTReadfile;
-
 class ASTExpr;
 class ASTExprBinary;
 class ASTExprTernary;
 
 class ASTVar;
 class ASTVarID;
+class ASTVar1darr;
+class ASTVar2darr;
 class ASTVarINT;
 class ASTVarBOOL;
 class ASTVarCHAR;
@@ -57,6 +61,11 @@ public:
     virtual void visit(ASTIf &node) = 0;
     virtual void visit(ASTFor &node) = 0;
     virtual void visit(ASTWhile &node) = 0;
+    virtual void visit(ASTPrint &node) = 0;
+
+    virtual void visit(ASTRead &node) = 0;
+    virtual void visit(ASTReadInput &node) = 0;
+    virtual void visit(ASTReadFile &node) = 0;
 
     virtual void visit(ASTFunc &node) = 0;
     virtual void visit(ASTFuncParam &node) = 0;
@@ -67,11 +76,9 @@ public:
     virtual void visit(ASTFunccallNoparam &node) = 0;
 
     virtual void visit(ASTVardecl &node) = 0;
+    virtual void visit(ASTVarSingle &node) = 0;
     virtual void visit(ASTVar1darray &node) = 0;
     virtual void visit(ASTVar2darray &node) = 0;
-    // virtual void visit(ASTPrint &node) = 0;
-    // virtual void visit(ASTReadinput &node) = 0;
-    // virtual void visit(ASTReadfile &node) = 0;
 
     virtual void visit(ASTExpr &node) = 0;
     virtual void visit(ASTExprBinary &node) = 0;
@@ -79,6 +86,8 @@ public:
 
     virtual void visit(ASTVar &node) = 0;
     virtual void visit(ASTVarID &node) = 0;
+    virtual void visit(ASTVar1darr &node) = 0;
+    virtual void visit(ASTVar2darr &node) = 0;
     virtual void visit(ASTVarINT &node) = 0;
     virtual void visit(ASTVarBOOL &node) = 0;
     virtual void visit(ASTVarCHAR &node) = 0;
@@ -126,6 +135,7 @@ class ASTBlock : public ASTnode
 public:
     std::vector<ASTStat *> statementList;
     ASTExpr *expr;
+    bool functionblock = false;
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
@@ -135,6 +145,7 @@ public:
 class ASTExpr : public ASTnode
 {
 public:
+    Type type = Type::DEFAULT_TYPE;
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
@@ -150,15 +161,6 @@ public:
         v.visit(*this);
     }
 };
-
-// class ASTStatIf : public ASTStat
-// {
-// public:
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
 
 class ASTIf : public ASTStat
 {
@@ -188,15 +190,6 @@ public:
         v.visit(*this);
     }
 };
-
-// class ASTStatFor : public ASTStat
-// {
-// public:
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
 
 class ASTFor : public ASTStat
 {
@@ -233,15 +226,6 @@ public:
     }
 };
 
-// class ASTStatWhile : public ASTStat
-// {
-// public:
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
-
 class ASTWhile : public ASTStat
 {
     ASTExpr *expr;
@@ -259,6 +243,22 @@ public:
         return block;
     }
     
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTPrint : public ASTStat
+{
+    ASTExpr *expr;
+public:
+    ASTPrint(ASTExpr *_expr) : expr(_expr){}
+    ASTExpr *getexpr()
+    {
+        return expr;
+    }
+
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
@@ -296,6 +296,7 @@ public:
 class ASTFunc : public ASTnode
 {
     public:
+    Type rettype = Type::DEFAULT_TYPE;
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
@@ -368,6 +369,7 @@ class ASTFunccallNoparam : public ASTFunccall
 class ASTVardecl : public ASTStat
 {
 public:
+    Type type1 = Type::DEFAULT_TYPE;
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
@@ -398,33 +400,20 @@ public:
 
 class ASTVar1darray : public ASTVardecl
 {
-    string type;
-    string id_name;
-    
-    int intlit;
-    string id_value;
+    string id;
+    string type;    
     ASTExpr *expr;
 
 public:
-    ASTVar1darray(string type, string id_name, int intlit=0, string id_value="", ASTExpr *expr = nullptr) : type(type), id_name(id_name), intlit(intlit), id_value(id_value), expr(expr) {}
+    ASTVar1darray(string type, string id, ASTExpr *expr = nullptr) : type(type), id(id), expr(expr) {}
     string getTYPE()
     {
         return type;
     }
     
-    string getIDname()
+    string getID()
     {
-        return id_name;
-    }
-
-    int getint()
-    {
-        return intlit;
-    }
-
-    string getIDvalue()
-    {
-        return id_value;
+        return id;
     }
 
     ASTExpr* getexpr()
@@ -441,42 +430,20 @@ public:
 class ASTVar2darray : public ASTVardecl
 {
     string type;
-    string id_name;
+    string id;
     
-    int intlit1, intlit2;
-    string id_value1, id_value2;
     ASTExpr *expr1, *expr2;
 
 public:
-    ASTVar2darray(string type, string id_name, int intlit1=0, int intlit2=0, string id_value1="", string id_value2="", ASTExpr *expr1 = nullptr, ASTExpr *expr2 = nullptr) : type(type), id_name(id_name), intlit1(intlit1), intlit2(intlit2), id_value1(id_value1), id_value2(id_value2), expr1(expr1), expr2(expr2) {}
+    ASTVar2darray(string type, string id, ASTExpr *expr1 = nullptr, ASTExpr *expr2 = nullptr) : type(type), id(id), expr1(expr1), expr2(expr2) {}
     string getTYPE()
     {
         return type;
     }
     
-    string getIDname()
+    string getID()
     {
-        return id_name;
-    }
-
-    int getint1()
-    {
-        return intlit1;
-    }
-
-    int getint2()
-    {
-        return intlit2;
-    }
-
-    string getIDvalue1()
-    {
-        return id_value1;
-    }
-
-    string getIDvalue2()
-    {
-        return id_value2;
+        return id;
     }
 
     ASTExpr* getexpr1()
@@ -495,60 +462,54 @@ public:
     }
 };
 
-// class ASTPrint : public ASTStat
-// {
-//     ASTExpr *expr;
-// public:
-//     ASTPrint(ASTExpr *_expr) : expr(_expr) {}
-//     ASTExpr *getexpr()
-//     {
-//         return expr;
-//     }
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
+class ASTRead : public ASTStat
+{
+public:
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
 
-// class ASTReadinput : public ASTStat
-// {
-//     ASTVar *var;
-// public:
-//     ASTReadinput(ASTVar *_var) : var(_var) {}
-//     ASTVar *getvar()
-//     {
-//         return var;
-//     }
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
+class ASTReadInput : public ASTRead
+{
+    ASTVarID *var;
+public:
+    ASTReadInput(ASTVarID *_var) : var(_var) {}
+    ASTVarID *getvar()
+    {
+        return var;
+    }
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
 
-// class ASTReadfile : public ASTStatRead
-// {
-//     ASTVar *var;
-//     ASTVarID *ID;
-//     ASTVarSTRING *STRING;
-// public:
-//     ASTReadfile(ASTVar *_var, ASTVarID *_ID = nullptr, ASTVarSTRING *_STRING = nullptr) : var(_var), ID(_ID), STRING(_STRING) {}
-//     ASTVar *getvar()
-//     {
-//         return var;
-//     }
-//     ASTVarID *getvarId()
-//     {
-//         return ID;
-//     }
-//     ASTVarSTRING *getvarSTRING()
-//     {
-//         return STRING;
-//     }
-//     virtual void accept(ASTvisitor &v)
-//     {
-//         v.visit(*this);
-//     }
-// };
+class ASTReadFile : public ASTRead
+{
+    ASTVarID *var;
+    ASTVarID *ID;
+    ASTVarSTRING *varstring;
+public:
+    ASTReadFile(ASTVarID *_var, ASTVarID *_ID = nullptr, ASTVarSTRING *_varstring = nullptr) : var(_var), ID(_ID), varstring(_varstring) {}
+    ASTVarID *getvar()
+    {
+        return var;
+    }
+    ASTVarID *getvarId()
+    {
+        return ID;
+    }
+    ASTVarSTRING *getvarSTRING()
+    {
+        return varstring;
+    }
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
 
 class ASTExprBinary : public ASTExpr
 {
@@ -563,13 +524,6 @@ public:
     // Constructor to initialize binary operator,
     // lhs and rhs of the binary expression.
     ASTExprBinary(std::string op, ASTExpr *_left, ASTExpr *_right) : bin_operator(op), left(_left), right(_right) {}
-
-    /*  virtual void printPostFix() const 
-     {
-     	lhs->printPostFix();
-     	rhs->printPostFix();
-     	std::cout << bin_operator << " "; 
-     } */
 
     ASTExpr *getLeft()
     {
@@ -643,10 +597,42 @@ class ASTVarID : public ASTVar
 {
 
     string id;
-
 public:
     ASTVarID(string id) : id(id) {}
+    string getID()
+    {
+        return id;
+    }
 
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTVar1darr : public ASTVar
+{
+    string id;
+public:
+    ASTExpr* expr;
+    ASTVar1darr(string id, ASTExpr* expr) : id(id) , expr(expr){}
+    string getID()
+    {
+        return id;
+    }
+
+    virtual void accept(ASTvisitor &v)
+    {
+        v.visit(*this);
+    }
+};
+
+class ASTVar2darr : public ASTVar
+{
+    string id;
+public:
+    ASTExpr *rexpr, *cexpr;
+    ASTVar2darr(string id, ASTExpr *rexpr, ASTExpr *cexpr) : id(id) ,rexpr(rexpr), cexpr(cexpr){}
     string getID()
     {
         return id;
@@ -660,12 +646,9 @@ public:
 
 class ASTVarINT : public ASTVar
 {
-
     int intlit;
-
 public:
     ASTVarINT(int intlit) : intlit(intlit) {}
-
     int getIntLit()
     {
         return intlit;
@@ -681,10 +664,8 @@ class ASTVarBOOL : public ASTVar
 {
 
     bool boollit;
-
 public:
     ASTVarBOOL(bool boollit) : boollit(boollit) {}
-
     bool getBoolLit()
     {
         return boollit;
@@ -701,7 +682,6 @@ class ASTVarCHAR : public ASTVar
     char charlit;
 public:
     ASTVarCHAR(char charlit) : charlit(charlit) {}
-
     char getCharLit()
     {
         return charlit;
@@ -715,9 +695,7 @@ public:
 
 class ASTVarSTRING : public ASTVar
 {
-
     string stringlit;
-
 public:
     ASTVarSTRING(string stringlit) : stringlit(stringlit) {}
 

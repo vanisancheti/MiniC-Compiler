@@ -1,0 +1,9 @@
+void main()
+{
+    int x;
+    int y;
+    int a[m,n];
+    x = x+1;
+    print(a[1,2]);
+    return;
+}

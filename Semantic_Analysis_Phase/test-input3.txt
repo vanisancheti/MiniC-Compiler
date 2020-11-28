@@ -1,0 +1,8 @@
+void main()
+{
+    int data;
+    data = read();
+    data = readfile("abc.txt");
+    char f[data];
+    return;
+}

@@ -1,0 +1,1 @@
+enum Type {DEFAULT_TYPE, INT, BOOL, CHAR, VOID, STRING};

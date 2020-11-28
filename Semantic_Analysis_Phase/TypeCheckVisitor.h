@@ -1,29 +1,32 @@
 //#include "ast.h"
 #include <iostream>
+#define ASSERT(cond, message) if(!(cond)) \
+    throw message
 using namespace std;
 
-class PostFixVisitor : public ASTvisitor
+enum Type {DEFAULT_TYPE, INT, BOOL, CHAR, VOID};
+
+class TypeCheckVisitor : public ASTvisitor
 {
+private:
+    Type type = Type::DEFAULT_TYPE;
+    Type return_type = Type::DEFAULT_TYPE;
 public:
     virtual void visit(ASTProg &node)
     {
-        cout << "PostFixVisit traversal invoked" << endl;
         int i=0;
         for (auto vardecl : node.variabledeclList)
         {
-            cout << " line " << i << " : ";
             vardecl->accept(*this);
             i = i+1;
         }
-        cout << endl;
         for (auto funcdecl : node.funcdeclList)
         {
-            cout << " line " << i << " : ";
             funcdecl->accept(*this);
             i = i+1;
         }
-        cout << endl;
         node.block->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTBlock &node)
@@ -31,55 +34,51 @@ public:
         int i = 1;
         for (auto statement : node.statementList)
         {
-            cout << " line " << i << " : ";
             statement->accept(*this);
-            cout << endl;
             i = i + 1;
         }
 
         ASTExpr *expr = node.expr;
-        if(expr!=nullptr){
+        if(expr){
             expr->accept(*this);
             cout << " return" << endl;
         }
+
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTStatExpr &node)
     {
         node.expr->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTStatCond &node)
     {
         node.exprter->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
-    virtual void visit(ASTRead &node)
-    {
-        cout << " ASTRead visit function " << endl;
-    }
+    // virtual void visit(ASTRead &node)
+    // {
+    //     cout << " ASTRead visit function " << endl;
+    // }
 
-    virtual void visit(ASTReadInput &node)
-    {
-        ASTVar *var = node.getvar();
-        var->accept(*this);
-        cout << " Read ()" << endl;
-    }
+    // virtual void visit(ASTReadinput &node)
+    // {
+    //     ASTVar *var = node.getvar();
+    //     var->accept(*this);
+    // }
 
-    virtual void visit(ASTReadFile &node)
-    {
-        ASTVarID *var = node.getvar();
-        ASTVarID *ID = node.getvarId();
-        ASTVarSTRING *STRING = node.getvarSTRING();
-
-        var->accept(*this);
-        cout << " Readfile(";
-        if(ID)
-            ID->accept(*this);
-        if(STRING)
-            STRING->accept(*this);
-        cout << ")" << endl;
-    }
+// virtual void visit(ASTReadfile &node)
+    // {
+    //     ASTVar *var = node.getvar();
+    //     ASTVarID *ID = node.getvarId();
+    //     ASTVarSTRING *STRING = node.getvarSTRING();
+    //     var->accept(*this);
+    //     ID->accept(*this);
+    //     STRING->accept(*this);
+    // }
 
     virtual void visit(ASTStatBREAK &node)
     {
@@ -98,13 +97,16 @@ public:
         ASTBlock *elseblock = node.getelseblock();
 
         expr->accept(*this);
+        ASSERT(type == Type::BOOL, "If statement Condition must be boolean");
         cout << endl;
         cout << "IF BLOCK" << endl;
         ifblock->accept(*this);
+        type = Type::DEFAULT_TYPE;
         if(elseblock){
             cout << "ELSE BLOCK" << endl;
             elseblock->accept(*this);
         }
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTFor &node)
@@ -115,9 +117,18 @@ public:
         ASTBlock *block = node.getblock();
 
         expr1->accept(*this);
+        Type it_type = type;
+        ASSERT(type == Type::INT, "For loop iterator must be int");
+
         expr2->accept(*this);
-        expr3->accept(*this);        
+        ASSERT(type == it_type, "For loop expr2 must be int");
+
+        expr3->accept(*this);
+        ASSERT(type == it_type, "For loop expr3 must be int");
+
+        type = Type::DEFAULT_TYPE;
         block->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTWhile &node)
@@ -126,7 +137,11 @@ public:
         ASTBlock *block = node.getblock();
 
         expr->accept(*this);
+        ASSERT(type == Type::BOOL, "While loop iterator must be bool");
+
+        type = Type::DEFAULT_TYPE;
         block->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTPrint &node)
@@ -134,6 +149,7 @@ public:
         cout << "print ";
         ASTExpr *expr = node.getexpr();
         expr->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTFunc &node)
@@ -153,6 +169,7 @@ public:
         node.vardecl->accept(*this);
         cout << ")";
         node.block->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTFuncNoparam &node)
@@ -161,6 +178,7 @@ public:
         cout << " " << node.id;
         cout << "()";
         node.block->accept(*this);
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTFunccall &node)
@@ -178,6 +196,7 @@ public:
         }
         node.var->accept(*this);
         cout << ")";
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTFunccallNoparam &node)
@@ -200,33 +219,39 @@ public:
     virtual void visit(ASTVar1darray &node)
     {
         cout << " " << node.getTYPE();
-        cout << " " << node.getID();
+        cout << " " << node.getIDname();
         cout << "[";
         
+        int intlit = node.getint();
+        string IDvalue = node.getIDvalue();
         ASTExpr *expr = node.getexpr();
 
-        if(expr)
-            expr->accept(*this);
+        // if(intlit!=NULL)
+        //     cout << intlit;
+        // if(IDvalue!=NULL)
+        //     cout << IDvalue;
+        // if(expr!=NULL)
+        //     cout << expr;
+
         cout << "]";
     }
 
     virtual void visit(ASTVar2darray &node)
     {
         cout << " " << node.getTYPE();
-        cout << " " << node.getID();
+        cout << " " << node.getIDname();
         cout << "[";
-        ASTExpr *rexpr = node.getexpr1();
-        ASTExpr *cexpr = node.getexpr2();
+        
+        // int intlit = node.getint();
+        // string IDvalue = node.getIDvalue();
+        // ASTExpr *expr = node.getexpr();
 
-        if(rexpr)
-            rexpr->accept(*this);
-        else
-            cerr << "Error:: Row index missing" << endl; 
-
-        if(cexpr)
-            cexpr->accept(*this);
-        else
-            cerr << "Error:: Column index missing" << endl; 
+        // if(intlit!=NULL)
+        //     cout << intlit;
+        // if(IDvalue!=NULL)
+        //     cout << IDvalue;
+        // if(expr!=NULL)
+        //     cout << expr;
 
         cout << "]";
     }
@@ -242,8 +267,22 @@ public:
         ASTExpr *right = node.getRight();
 
         left->accept(*this);
+        Type left_type = type;
+
         right->accept(*this);
-        cout << " " + node.getBin_operator();
+        Type right_type = type;
+
+        string op = node.getBin_operator();
+        ASSERT(left_type == right_type, "Binary Expression Operator and Operands have incompatible type");
+
+        if(op == "<" || op == ">" || op == "<=" || op == ">=" || op == "==" || op == "!=" || op == "AND" || op == "OR" || op == "NOT")
+            type = Type::BOOL;
+        else if(left_type == Type::CHAR or right_type == Type::CHAR)
+            type = Type::CHAR;
+        else if(left_type == Type::INT or right_type == Type::INT)
+            type = Type::INT;
+
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTExprTernary &node)
@@ -253,9 +292,11 @@ public:
         ASTExpr *third = node.getThird();
 
         first->accept(*this);
+        
         second->accept(*this);
         third->accept(*this);
-        cout << " ?:";
+
+        type = Type::DEFAULT_TYPE;
     }
 
     virtual void visit(ASTVar &node)
@@ -268,44 +309,21 @@ public:
         cout << " " << node.getID();
     }
 
-    virtual void visit(ASTVar1darr &node)
-    {
-        cout << " " << node.getID() << "[";
-        if(node.expr)
-            node.expr->accept(*this);
-
-        cout << "]" << endl;
-    }
-
-    virtual void visit(ASTVar2darr &node)
-    {
-        cout << " " << node.getID() << "[";
-        ASTExpr *rexpr = node.rexpr;
-        ASTExpr *cexpr = node.cexpr;
-
-        if(rexpr){
-            rexpr->accept(*this);
-            cout << ",";
-        }
-
-        if(cexpr)
-            cexpr->accept(*this);
-
-        cout << "]" << endl;
-    }
-
     virtual void visit(ASTVarINT &node)
     {
+        type = Type::INT;
         cout << " " << node.getIntLit();
     }
 
     virtual void visit(ASTVarBOOL &node)
     {
+        type = Type::BOOL;
         cout << " " << node.getBoolLit();
     }
 
     virtual void visit(ASTVarCHAR &node)
     {
+        type = Type::CHAR;
         cout << " " << node.getCharLit();
     }
 
