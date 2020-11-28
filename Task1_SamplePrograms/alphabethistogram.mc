@@ -11,7 +11,7 @@ void main()
     }
 
     char data[100000];
-    data = readfile(filename);
+    data = readfile(filename); 
 
     int count[26];
     i = 0;
@@ -23,11 +23,11 @@ void main()
 
     while(data[i]!= EOF)
     {
-        if(data[i] >= 'a' and data[i] <= 'z')
+        if(data[i] >= 'a' AND data[i] <= 'z')
         {
             count[data[i] - 'a'] = count[data[i] - 'a'] + 1; 
         }
-        if(data[i] >= 'A' and data[i] <= 'Z')
+        if(data[i] >= 'A' AND data[i] <= 'Z')
         {
             count[data[i] - 'A'] = count[data[i] - 'Z'] + 1; 
         }        

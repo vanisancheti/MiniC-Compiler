@@ -6,10 +6,10 @@ void main()
     N = read();
     M = read();
 
-    int arr1[N,M];
-    int arr2[N,M];
+    int arrone[N,M];
+    int arrtwo[N,M];
 
-    int arr3[N,M];
+    int arrthree[N,M];
 
     int i;
     int j;
@@ -18,8 +18,8 @@ void main()
     {
         for(j=0;j<M;j=j+1)
         {
-            arr1[i,j] = read();
-            arr2[i,j] = read();
+            arrone[i,j] = read();
+            arrtwo[i,j] = read();
         }
     }
 
@@ -27,8 +27,8 @@ void main()
     {
         for(j=0;j<M;j=j+1)
         {
-            arr3[i,j] = arr1[i,j] + arr2[i,j];
-            print(arr3[i,j]);
+            arrthree[i,j] = arrone[i,j] + arrtwo[i,j];
+            print(arrthree[i,j]);
             print(" "); 
         }
         print("\n");

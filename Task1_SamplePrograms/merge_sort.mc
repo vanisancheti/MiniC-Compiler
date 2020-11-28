@@ -10,7 +10,7 @@ void merge(int l, int mid, int r)
     j = mid;
     k = 0;
 
-    while(i!=mid and j!=r)
+    while(i!=mid AND j!=r)
     {
         if(arr[i] < arr[j])
         {
@@ -52,7 +52,7 @@ void mergesort(int l, int r)
 {
     if(r <= l+1)
     {
-        return arr;
+        return;
     }
     
     int mid;
@@ -61,7 +61,7 @@ void mergesort(int l, int r)
     mergesort(l, mid);
     mergesort(mid, r);
     
-    int arr_merge[];
+    int arr_merge[100];
     merge(l, mid, r);
 
     return;
@@ -80,7 +80,7 @@ void main()
         arr[i] = read();
     }
 
-    arr = mergesort(arr, 0, N);
+    mergesort(0, N);
 
     for(i=0;i<N;i=i+1)
     {

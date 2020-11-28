@@ -8,7 +8,6 @@
 
 #include "ExprBuildASTVisitor.h"
 #include "PostfixVisitor.h"
-// #include "TypeCheckVisitor.h"
 #include "SemanticCheckVisitor.h"
 // #include "ast.h"
 

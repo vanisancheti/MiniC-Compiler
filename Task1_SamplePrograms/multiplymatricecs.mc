@@ -8,10 +8,10 @@ void main()
     Q = read();
     R = read();
 
-    int arr1[P,Q];
-    int arr2[Q,R];
+    int arra[P,Q];
+    int arrb[Q,R];
 
-    int arr3[P,R];
+    int arrc[P,R];
 
     int i;
     int j;
@@ -21,7 +21,7 @@ void main()
     {
         for(j=0;j<Q;j=j+1)
         {
-            arr1[i,j] = read();
+            arra[i,j] = read();
         }
     }
 
@@ -29,7 +29,7 @@ void main()
     {
         for(j=0;j<R;j=j+1)
         {
-            arr2[i,j] = read();
+            arrb[i,j] = read();
         }
     }
 
@@ -39,9 +39,9 @@ void main()
         {
             for(k=0;k<Q;k=k+1)
             {
-                arr3[i,j] = arr3[i,j] + arr1[i,k]*arr2[k,j];
+                arrc[i,j] = arrc[i,j] + arra[i,k]*arrb[k,j];
             }
-            print(arr3[i,j]);
+            print(arrc[i,j]);
             print(" ");
         }
         print("\n");

@@ -9,7 +9,7 @@ int power(int x, int k)
     else
     {
         k = k - 1;
-        pow = x*power(x, k);
+        pow = x * power(x, k);
     }
 
     return pow;

@@ -1,6 +1,6 @@
 int arr[100];
 
-void sort(int digit, int N)
+int sort(int digit, int N)
 {
     int temp[N];
     int count[10];
@@ -32,7 +32,7 @@ void sort(int digit, int N)
         arr[i] = temp[i];
     }
 
-    return;
+    return 0;
 }
 
 void main()
@@ -60,9 +60,10 @@ void main()
         }
     }
 
+    int x;
     for(i=1;max/i > 0; i = i*10)
     {
-        sort(i, N);
+        x = sort(i, N);
     }
 
     for(i=0;i<N;i=i+1)
