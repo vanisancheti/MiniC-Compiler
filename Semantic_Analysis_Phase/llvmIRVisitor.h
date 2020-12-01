@@ -337,7 +337,7 @@ public:
     virtual void visit(ASTVarSingle &node)
     {
         cout << "llvmIRVarSingle" << endl;
-        llvm::AllocaInst *Alloca = new llvm::AllocaInst(llvm::Type::getInt64Ty(TheContext), node.getID()/*name*/, blockscope.back().second/*for which basic block*/);
+        llvm::AllocaInst *Alloca = new llvm::AllocaInst(llvm::Type::getInt64Ty(TheContext), node.getID(), blockscope.back().second);
         new llvm::StoreInst(llvm::ConstantInt::get(llvm::Type::getInt64Ty(TheContext), 0, true), Alloca, false, blockscope.back().second);        
         blockscope.back().first.insert({node.getID(), Alloca});
         return;
@@ -410,7 +410,7 @@ public:
             ret = new llvm::ZExtInst(llvm::CmpInst::Create(llvm::Instruction::ICmp, llvm::ICmpInst::ICMP_EQ, leftval, rightval,"tmp", blockscope.back().second), llvm::Type::getInt64Ty(TheContext), "zext", blockscope.back().second);
         if(op == "!=")
             ret = new llvm::ZExtInst(llvm::CmpInst::Create(llvm::Instruction::ICmp, llvm::ICmpInst::ICMP_NE, leftval, rightval,"tmp", blockscope.back().second), llvm::Type::getInt64Ty(TheContext), "zext", blockscope.back().second);
-        if(op == "=")
+        if(op == "=") 
             new llvm::StoreInst(rightval, leftval, false, blockscope.back().second);
         if(op == "AND")
             ret = llvm::BinaryOperator::Create(llvm::Instruction::And, leftval, rightval, "tmp", blockscope.back().second);
@@ -447,6 +447,7 @@ public:
 
         if(val != nullptr)
             ret = new llvm::LoadInst(val, "tmp", blockscope.back().second);
+            
         return;
     }
 
