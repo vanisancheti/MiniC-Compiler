@@ -1,9 +1,24 @@
+int funcgcd(int a, int b)
+{
+    if(x <= 0)
+    {
+        return a;
+    } 
+    else
+    {
+        int x;
+        x = a % b;
+        x = funcgcd(b, x);
+        return x;
+    }
+}
+
 void main()
 {
-    int x;
-    int y;
-    int a[m,n];
-    x = x+1;
-    print(a[1,2]);
+    int n;
+    n = 4;
+    int x[n];
+
+    x = funcgcd(x, x);
     return;
 }

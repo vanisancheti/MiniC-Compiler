@@ -21,7 +21,7 @@ void main()
         count[i] = count[i] + 1;
     }
 
-    while(data[i]!= EOF)
+    while(data[i]!= 'E')
     {
         if(data[i] >= 'a' AND data[i] <= 'z')
         {

@@ -368,29 +368,38 @@ class ASTFunccallNoparam : public ASTFunccall
 
 class ASTVardecl : public ASTStat
 {
+    string id;
 public:
     Type type1 = Type::DEFAULT_TYPE;
     virtual void accept(ASTvisitor &v)
     {
         v.visit(*this);
     }
+    string getID()
+    {
+        return id;
+    }
+
+    void setId(string idval){
+        id = idval;
+    }
 };
 
 class ASTVarSingle : public ASTVardecl
 {
     string type;
-    string id;
+    // string id;
 public:
-    ASTVarSingle(string type, string id) : type(type), id(id) {}
+    ASTVarSingle(string type) : type(type) {}
     string getTYPE()
     {
         return type;
     }
     
-    string getID()
-    {
-        return id;
-    }
+    // string getID()
+    // {
+    //     return id;
+    // }
 
     virtual void accept(ASTvisitor &v)
     {
@@ -400,21 +409,21 @@ public:
 
 class ASTVar1darray : public ASTVardecl
 {
-    string id;
+    // string id;
     string type;    
     ASTExpr *expr;
 
 public:
-    ASTVar1darray(string type, string id, ASTExpr *expr = nullptr) : type(type), id(id), expr(expr) {}
+    ASTVar1darray(string type, ASTExpr *expr = nullptr) : type(type), expr(expr) {}
     string getTYPE()
     {
         return type;
     }
     
-    string getID()
-    {
-        return id;
-    }
+    // string getID()
+    // {
+    //     return id;
+    // }
 
     ASTExpr* getexpr()
     {
@@ -430,21 +439,21 @@ public:
 class ASTVar2darray : public ASTVardecl
 {
     string type;
-    string id;
+    // string id;
     
     ASTExpr *expr1, *expr2;
 
 public:
-    ASTVar2darray(string type, string id, ASTExpr *expr1 = nullptr, ASTExpr *expr2 = nullptr) : type(type), id(id), expr1(expr1), expr2(expr2) {}
+    ASTVar2darray(string type, ASTExpr *expr1 = nullptr, ASTExpr *expr2 = nullptr) : type(type), expr1(expr1), expr2(expr2) {}
     string getTYPE()
     {
         return type;
     }
     
-    string getID()
-    {
-        return id;
-    }
+    // string getID()
+    // {
+    //     return id;
+    // }
 
     ASTExpr* getexpr1()
     {

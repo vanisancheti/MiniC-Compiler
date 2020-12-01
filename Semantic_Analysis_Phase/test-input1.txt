@@ -35,16 +35,5 @@ void main()
         sum = sum + temp;
     }
 
-    while(z < max_value)
-    {
-        z = z+1;
-        if(z == 3)
-        {
-            break;
-        }
-    }
-
-    cond(x == 1) y=1 : y=2;
-
     return;
 }

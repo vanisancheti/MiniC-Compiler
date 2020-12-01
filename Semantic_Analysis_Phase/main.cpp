@@ -9,6 +9,7 @@
 #include "ExprBuildASTVisitor.h"
 #include "PostfixVisitor.h"
 #include "SemanticCheckVisitor.h"
+#include "llvmIRVisitor.h"
 // #include "ast.h"
 
 using namespace std;
@@ -46,6 +47,10 @@ int main(int argc, const char* argv[]) {
     sc->visit(*program_root);
     cout << "------------------------------------Semantic Completed" << endl;
 
+    cout << "LLVMIRGeneration -------------------------------------" << endl;
+    llvmIRVisitor * llvmvisitor = new llvmIRVisitor();
+    llvmvisitor->visit(*program_root); 
+    cout << "------------------------------------LLVMIRGeneration Completed" << endl;
 
     return 0;
 }

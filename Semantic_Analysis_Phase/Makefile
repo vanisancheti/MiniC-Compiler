@@ -2,7 +2,8 @@ ANTLR4=java -Xmx500M -cp "/usr/local/lib/antlr-4.8-complete.jar:$CLASSPATH" org.
 
 antlr:	Expr.g4
 		$(ANTLR4) -Dlanguage=Cpp -no-listener -visitor Expr.g4
-		g++ -std=c++11 -g main.cpp -o expr -I/usr/local/include/antlr4-runtime -lantlr4-runtime
+		# g++ -std=c++11 -g main.cpp -o expr -I/usr/local/include/antlr4-runtime -lantlr4-runtime
+		g++ -std=c++11 -g main.cpp -o expr -I/usr/local/include/antlr4-runtime -lantlr4-runtime `llvm-config --cppflags --ldflags --libs core --system-libs`
 
 clean:	
 		rm -f ExprLexer.h ExprParser.h expr *.tokens *.interp ExprBaseVisitor.cpp \

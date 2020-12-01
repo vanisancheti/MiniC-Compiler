@@ -227,7 +227,8 @@ public:
         string id = context->ID()->getText();
         string type = context->TYPE()->getText();
         
-        ASTVarSingle *node = new ASTVarSingle(type, id);
+        ASTVarSingle *node = new ASTVarSingle(type);
+        node->setId(id);
         return (ASTVardecl* )node;
     }
     virtual antlrcpp::Any visitVar1darray(ExprParser::Var1darrayContext *context)
@@ -237,10 +238,12 @@ public:
         string type = context->TYPE()->getText();
         ASTVar1darray *node;
 
+        ASTExpr *expr = nullptr;
         if(context->expr()){
-            ASTExpr *expr = visit(context->expr());
-            node = new ASTVar1darray(type, id, expr);
+            expr = visit(context->expr());
         }
+        node = new ASTVar1darray(type, expr);
+        node->setId(id);
 
         return (ASTVardecl* )node;
     }
@@ -258,7 +261,8 @@ public:
             if(context->expr().size() > 1)
                 cexpr = visit(context->expr(1));
         }
-        node = new ASTVar2darray(type, id, rexpr, cexpr);
+        node = new ASTVar2darray(type, rexpr, cexpr);
+        node->setId(id);
         return (ASTVardecl* )node;
     }
 
